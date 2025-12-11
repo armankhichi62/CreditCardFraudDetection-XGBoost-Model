@@ -6,7 +6,9 @@ import xgboost as xgb
 
 st.set_page_config(page_title="Fraud Detection - XGBoost", layout="centered")
 
-# Load all artifacts (model + preprocessors)
+# -------------------------------
+# LOAD MODEL + PREPROCESSORS
+# -------------------------------
 @st.cache_resource
 def load_artifacts():
     booster = xgb.Booster()
@@ -24,12 +26,14 @@ def load_artifacts():
     return booster, scaler, encoders, features
 
 
-# ---- LOAD MODEL & PREPROCESSORS ----
 booster, scaler, encoders, features = load_artifacts()
 
 numeric_features = features["numeric"]
 categorical_features = features["categorical"]
 
+# -------------------------------
+# UI START
+# -------------------------------
 st.title("Credit Card Fraud Detection (XGBoost)")
 st.write("Enter transaction details to predict whether the transaction is fraudulent.")
 
@@ -48,13 +52,20 @@ with st.form("input_form"):
 
     submitted = st.form_submit_button("Predict")
 
+# -------------------------------
+# PREDICTION LOGIC
+# -------------------------------
 if submitted:
+
+    # Threshold slider (IMPORTANT)
+    threshold = st.slider("Fraud Threshold", 0.0, 1.0, 0.30, 0.01)
+
     try:
-        # ---- PREPARE NUMERIC FEATURES ----
+        # ---- NUMERIC FEATURES ----
         X_num = np.array([[num_inputs[c] for c in numeric_features]])
         X_num_scaled = scaler.transform(X_num)
 
-        # ---- ENCODE CATEGORICAL FEATURES ----
+        # ---- CATEGORICAL FEATURES ----
         cat_encoded = []
         for col in categorical_features:
             le = encoders[col]
@@ -63,33 +74,26 @@ if submitted:
             if val in le.classes_:
                 enc = int(le.transform([val])[0])
             else:
-                # fallback for unseen category
                 enc = int(le.transform([le.classes_[0]])[0])
 
             cat_encoded.append(enc)
 
-        # ---- FINAL INPUT VECTOR ----
+        # ---- COMBINE INPUTS ----
         final_input = np.hstack([X_num_scaled, np.array([cat_encoded])])
 
-        # ---- XGBOOST PREDICTION ----
-        # FINAL INPUT VECTOR
-        final_input = np.hstack([X_num_scaled, np.array([cat_encoded])])
-
-        # FEATURE NAMES IN CORRECT ORDER
+        # ---- DMATRIX WITH FEATURE NAMES ----
         all_features = numeric_features + categorical_features
-
-        # CREATE DMATRIX WITH FEATURE NAMES
         dtest = xgb.DMatrix(final_input, feature_names=all_features)
 
-        # PREDICT
+        # ---- XGBOOST PREDICTION ----
         prob = float(booster.predict(dtest)[0])
-        THRESHOLD = 0.30
-        pred = 1 if prob > THRESHOLD else 0
+        pred = 1 if prob > threshold else 0
 
-        # ---- DISPLAY RESULTS ----
+        # ---- DISPLAY OUTPUT ----
         st.success("Prediction Complete")
         st.write(f"**Fraud Probability:** {prob:.4f}")
-        st.write(f"**Prediction:** {'FRAUD' if pred==1 else 'LEGIT'}")
+        st.write(f"**Threshold Used:** {threshold}")
+        st.write(f"**Prediction:** {'FRAUD' if pred == 1 else 'LEGIT'}")
 
     except Exception as e:
         st.error(f"Error: {e}")
