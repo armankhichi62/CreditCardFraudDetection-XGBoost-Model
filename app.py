@@ -12,7 +12,7 @@ st.set_page_config(page_title="Fraud Detection - XGBoost", layout="centered")
 @st.cache_resource
 def load_artifacts():
     booster = xgb.Booster()
-    booster.load_model("xgb_model (1).json")
+    booster.load_model("xgb_model.json")   # your booster file
 
     with open("scaler.pkl", "rb") as f:
         scaler = pickle.load(f)
@@ -31,6 +31,7 @@ booster, scaler, encoders, features = load_artifacts()
 numeric_features = features["numeric"]
 categorical_features = features["categorical"]
 
+
 # -------------------------------
 # UI START
 # -------------------------------
@@ -38,6 +39,7 @@ st.title("Credit Card Fraud Detection (XGBoost)")
 st.write("Enter transaction details to predict whether the transaction is fraudulent.")
 
 with st.form("input_form"):
+
     st.subheader("Numeric Features")
     num_inputs = {}
     cols = st.columns(2)
@@ -51,6 +53,7 @@ with st.form("input_form"):
         cat_inputs[col] = st.text_input(col, value="")
 
     submitted = st.form_submit_button("Predict")
+
 
 # -------------------------------
 # PREDICTION LOGIC
@@ -74,16 +77,17 @@ if submitted:
             if val in le.classes_:
                 enc = int(le.transform([val])[0])
             else:
+                # fallback to first known category
                 enc = int(le.transform([le.classes_[0]])[0])
 
             cat_encoded.append(enc)
 
-        # ---- COMBINE INPUTS ----
+        # ---- FINAL INPUT VECTOR ----
         final_input = np.hstack([X_num_scaled, np.array([cat_encoded])])
 
-        # ---- DMATRIX WITH FEATURE NAMES ----
-        all_features = numeric_features + categorical_features
-        dtest = xgb.DMatrix(final_input, feature_names=all_features)
+        # ---- DMATRIX WITHOUT FEATURE NAMES (CRUCIAL) ----
+        # Booster was trained with default names f0, f1, f2...
+        dtest = xgb.DMatrix(final_input)
 
         # ---- XGBOOST PREDICTION ----
         prob = float(booster.predict(dtest)[0])
@@ -93,7 +97,7 @@ if submitted:
         st.success("Prediction Complete")
         st.write(f"**Fraud Probability:** {prob:.4f}")
         st.write(f"**Threshold Used:** {threshold}")
-        st.write(f"**Prediction:** {'FRAUD' if pred == 1 else 'LEGIT'}")
+        st.write(f"**Prediction:** {'⚠️ FRAUD' if pred == 1 else '✔️ LEGIT'}")
 
     except Exception as e:
         st.error(f"Error: {e}")
