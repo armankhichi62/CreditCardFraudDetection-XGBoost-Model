@@ -14,7 +14,7 @@ def get_base64_image(image_path):
     with open(image_path, "rb") as img:
         return base64.b64encode(img.read()).decode()
 
-bg_image = get_base64_image("bank.jpg")
+bg_image = get_base64_image("arm.jpg")
 
 st.markdown(
     f"""
