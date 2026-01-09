@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pickle
+import pandas as pd
 
 st.set_page_config(
     page_title="Fraud Detection - XGBoost",
@@ -92,6 +93,32 @@ if submitted:
         st.write(f"**Threshold Used:** `{threshold}`")
         st.write(f"**Prediction:** {'⚠️ FRAUD' if pred else '✔️ LEGIT'}")
 
-    except Exception as e:
-        st.error(f"Error: {e}")
+        # FEATURE IMPORTANCE UI
+        # ----------------------------------
+        st.markdown("---")
+        st.subheader("🔍 Feature Importance (Model Explanation)")
 
+        importances = xgb_model.feature_importances_
+        feature_names = numeric_features + categorical_features
+
+        importance_df = (
+            pd.DataFrame({
+                "Feature": feature_names,
+                "Importance": importances
+            })
+            .sort_values(by="Importance", ascending=False)
+        )
+
+        top_n = st.slider(
+            "Number of top features to display",
+            min_value=5,
+            max_value=len(feature_names),
+            value=10
+        )
+
+        st.bar_chart(
+            importance_df.head(top_n).set_index("Feature")
+        )
+
+    except Exception as e:
+        st.error(f"Error during prediction: {e}")
