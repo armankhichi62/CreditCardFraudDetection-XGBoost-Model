@@ -33,15 +33,15 @@ Key Highlights:
 
 3.Handling Imbalance:
 
-   No oversampling (to preserve real-world probabilities)
+------   No oversampling (to preserve real-world probabilities)
 
-   Risk interpretation via thresholding
+------   Risk interpretation via thresholding
 
 4.Preprocessing:
 
-   StandardScaler for numeric features
+------   StandardScaler for numeric features
 
-   LabelEncoder for categorical features
+------   LabelEncoder for categorical features
 
 5.Output: Probability-based fraud risk score
 
