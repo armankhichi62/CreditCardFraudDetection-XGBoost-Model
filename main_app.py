@@ -3,13 +3,13 @@ import numpy as np
 import pickle
 import pandas as pd
 
-if "threshold" not in st.session_state:
-    st.session_state.threshold = 0.20
-
 st.set_page_config(
     page_title="Fraud Detection - XGBoost",
     layout="centered"
 )
+
+if "threshold" not in st.session_state:
+    st.session_state.threshold = 0.20
 
 # -------------------------------
 # LOAD MODEL + PREPROCESSORS
@@ -101,7 +101,10 @@ if submitted:
 
         # XGBoost prediction (NO DMatrix)
         prob = float(xgb_model.predict_proba(final_input)[0][1])
-        pred = 1 if prob > st.session_state.threshold else 0
+  
+        threshold = st.session_state.threshold 
+        pred = 1 if prob > threshold else 0
+
 
         # Output
         st.success("Prediction Complete")
