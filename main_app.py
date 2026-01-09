@@ -34,7 +34,7 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(5, 15, 30, 0.92);  /* darker overlay */
+        background: rgba(5, 15, 30, 0.95);  /* darker overlay */
         z-index: -1;
     }}
 
