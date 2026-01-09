@@ -8,6 +8,32 @@ st.set_page_config(
     layout="centered"
 )
 
+st.markdown(
+    """
+    <style>
+    /* App background */
+    .stApp {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: white;
+    }
+
+    /* Headings */
+    h1, h2, h3 {
+        color: #f1f5f9;
+    }
+
+    /* Input labels */
+    label {
+        color: #e5e7eb !important;
+        font-weight: 600;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 if "threshold" not in st.session_state:
     st.session_state.threshold = 0.05
 
@@ -44,9 +70,8 @@ st.write(
     "This system predicts **fraud risk probability** using an XGBoost model. "
     "Because fraud is rare, predictions are interpreted as **risk levels**, not absolute fraud."
 )
-st.write("Enter transaction details to predict fraud")
 
-
+st.markdown("---")
 # -------- Threshold slider (OUTSIDE form & if) ----
 st.subheader("⚙️ Fraud Sensitivity")
 
@@ -63,7 +88,7 @@ st.write(f"Current Threshold: **{st.session_state.threshold:.2f}**")
 
 # ---------------- INPUT FORM ---------------------
 with st.form("input_form"):
-
+    st.subheader("🧾 Transaction Details")
     st.subheader("Numeric Features")
     num_inputs = {}
     cols = st.columns(2)
@@ -112,27 +137,47 @@ if submitted:
 
         if prob >= high_th:
             risk = "🔴 HIGH RISK"
-            color = "red"
+            color = "#ef4444"
         elif prob >= medium_th:
             risk = "🟡 MEDIUM RISK"
-            color = "orange"
+            color = "#facc15"
         else:
             risk = "🟢 LOW RISK"
-            color = "green"
+            color = "#22c55e"
 
-        # ----- Output -----
-        st.success("Prediction Complete")
-        st.markdown(f"### Fraud Probability: `{prob:.4f}`")
-        st.markdown(f"### Risk Level: **:{color}[{risk}]**")
-
-        st.info(
-            "💡 **Note:** Fraud models output low probabilities because fraud is rare. "
-            "Risk levels provide a realistic interpretation used in banking systems."
+        # -------------------------------------------------
+        # RESULT CARD
+        # -------------------------------------------------
+        st.markdown(
+            f"""
+            <div class="card">
+                <h3>🔍 Prediction Result</h3>
+                <p><b>Fraud Probability:</b> {prob:.4f}</p>
+                <p><b>Risk Level:</b></p>
+                <div style="
+                    display:inline-block;
+                    padding:8px 16px;
+                    border-radius:20px;
+                    background-color:{color};
+                    color:black;
+                    font-weight:bold;
+                ">
+                    {risk}
+                </div>
+                <p style="margin-top:12px; font-size:0.9em;">
+                    ℹ️ Fraud probabilities are naturally low because fraud is rare.
+                    Risk is interpreted relative to normal transaction behavior.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
+        # -------------------------------------------------
         # FEATURE IMPORTANCE UI
         # ----------------------------------
         st.markdown("---")
-        st.subheader("🔍 Feature Importance (Model Explanation)")
+        st.subheader("📊 Feature Importance (Model Explanation)")
+        st.caption("Features that influence fraud risk the most")
 
         importances = xgb_model.feature_importances_
         feature_names = numeric_features + categorical_features
