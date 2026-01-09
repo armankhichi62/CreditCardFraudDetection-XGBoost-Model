@@ -42,6 +42,22 @@ categorical_features = features["categorical"]
 st.title("💳 Credit Card Fraud Detection (XGBoost)")
 st.write("Enter transaction details to predict fraud")
 
+
+# -------- Threshold slider (OUTSIDE form & if) ----
+st.subheader("⚙️ Fraud Sensitivity")
+
+st.slider(
+    "Fraud Threshold",
+    min_value=0.0,
+    max_value=1.0,
+    step=0.01,
+    key="threshold"
+)
+
+st.write(f"Current Threshold: **{st.session_state.threshold:.2f}**")
+
+
+# ---------------- INPUT FORM ---------------------
 with st.form("input_form"):
 
     st.subheader("Numeric Features")
@@ -62,16 +78,6 @@ with st.form("input_form"):
 # PREDICTION
 # -------------------------------
 if submitted:
-
-    threshold = st.slider(
-        "Fraud Threshold",
-        min_value=0.0,
-        max_value=1.0,
-        step=0.01,
-        key="threshold"
-    )
-
-
     try:
         # Numeric
         X_num = np.array([[num_inputs[c] for c in numeric_features]])
