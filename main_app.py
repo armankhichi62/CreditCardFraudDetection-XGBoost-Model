@@ -13,9 +13,9 @@ st.set_page_config(
 # -------------------------------
 @st.cache_resource
 def load_artifacts():
-    xgb_model = XGBClassifier()
-    xgb_model.load_model("xgb_model.json")
-
+     with open("xgb_model.pkl", "rb") as f:
+        xgb_model = pickle.load(f)
+         
     with open("scaler.pkl", "rb") as f:
         scaler = pickle.load(f)
 
