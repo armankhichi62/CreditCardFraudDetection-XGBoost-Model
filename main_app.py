@@ -3,6 +3,9 @@ import numpy as np
 import pickle
 import pandas as pd
 
+if "threshold" not in st.session_state:
+    st.session_state.threshold = 0.20
+
 st.set_page_config(
     page_title="Fraud Detection - XGBoost",
     layout="centered"
@@ -60,7 +63,14 @@ with st.form("input_form"):
 # -------------------------------
 if submitted:
 
-    threshold = st.slider("Fraud Threshold", 0.0, 1.0, 0.50, 0.01)
+    threshold = st.slider(
+        "Fraud Threshold",
+        min_value=0.0,
+        max_value=1.0,
+        step=0.01,
+        key="threshold"
+    )
+
 
     try:
         # Numeric
@@ -85,7 +95,7 @@ if submitted:
 
         # XGBoost prediction (NO DMatrix)
         prob = float(xgb_model.predict_proba(final_input)[0][1])
-        pred = 1 if prob > threshold else 0
+        pred = 1 if prob > st.session_state.threshold else 0
 
         # Output
         st.success("Prediction Complete")
