@@ -1,18 +1,20 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
 import pickle
-import xgboost as xgb
+from xgboost import XGBClassifier
 
-st.set_page_config(page_title="Fraud Detection - XGBoost", layout="centered")
+st.set_page_config(
+    page_title="Fraud Detection - XGBoost",
+    layout="centered"
+)
 
 # -------------------------------
 # LOAD MODEL + PREPROCESSORS
 # -------------------------------
 @st.cache_resource
 def load_artifacts():
-    booster = xgb.Booster()
-    booster.load_model("xgb_booster.json")   # your booster file
+    xgb_model = XGBClassifier()
+    xgb_model.load_model("xgb_model.json")
 
     with open("scaler.pkl", "rb") as f:
         scaler = pickle.load(f)
@@ -23,20 +25,19 @@ def load_artifacts():
     with open("features.pkl", "rb") as f:
         features = pickle.load(f)
 
-    return booster, scaler, encoders, features
+    return xgb_model, scaler, encoders, features
 
 
-booster, scaler, encoders, features = load_artifacts()
+xgb_model, scaler, encoders, features = load_artifacts()
 
 numeric_features = features["numeric"]
 categorical_features = features["categorical"]
 
-
 # -------------------------------
-# UI START
+# UI
 # -------------------------------
-st.title("Credit Card Fraud Detection (XGBoost)")
-st.write("Enter transaction details to predict whether the transaction is fraudulent.")
+st.title("💳 Credit Card Fraud Detection (XGBoost)")
+st.write("Enter transaction details to predict fraud")
 
 with st.form("input_form"):
 
@@ -50,25 +51,23 @@ with st.form("input_form"):
     st.subheader("Categorical Features")
     cat_inputs = {}
     for col in categorical_features:
-        cat_inputs[col] = st.text_input(col, value="")
+        cat_inputs[col] = st.text_input(col)
 
     submitted = st.form_submit_button("Predict")
 
-
 # -------------------------------
-# PREDICTION LOGIC
+# PREDICTION
 # -------------------------------
 if submitted:
 
-    # Threshold slider (IMPORTANT)
-    threshold = st.slider("Fraud Threshold", 0.0, 1.0, 0.30, 0.01)
+    threshold = st.slider("Fraud Threshold", 0.0, 1.0, 0.50, 0.01)
 
     try:
-        # ---- NUMERIC FEATURES ----
+        # Numeric
         X_num = np.array([[num_inputs[c] for c in numeric_features]])
         X_num_scaled = scaler.transform(X_num)
 
-        # ---- CATEGORICAL FEATURES ----
+        # Categorical
         cat_encoded = []
         for col in categorical_features:
             le = encoders[col]
@@ -77,27 +76,23 @@ if submitted:
             if val in le.classes_:
                 enc = int(le.transform([val])[0])
             else:
-                # fallback to first known category
                 enc = int(le.transform([le.classes_[0]])[0])
 
             cat_encoded.append(enc)
 
-        # ---- FINAL INPUT VECTOR ----
+        # Final input
         final_input = np.hstack([X_num_scaled, np.array([cat_encoded])])
 
-        # ---- DMATRIX WITHOUT FEATURE NAMES (CRUCIAL) ----
-        # Booster was trained with default names f0, f1, f2...
-        dtest = xgb.DMatrix(final_input)
-
-        # ---- XGBOOST PREDICTION ----
-        prob = float(booster.predict(dtest)[0])
+        # XGBoost prediction (NO DMatrix)
+        prob = float(xgb_model.predict_proba(final_input)[0][1])
         pred = 1 if prob > threshold else 0
 
-        # ---- DISPLAY OUTPUT ----
+        # Output
         st.success("Prediction Complete")
-        st.write(f"**Fraud Probability:** {prob:.4f}")
-        st.write(f"**Threshold Used:** {threshold}")
-        st.write(f"**Prediction:** {'⚠️ FRAUD' if pred == 1 else '✔️ LEGIT'}")
+        st.write(f"**Fraud Probability:** `{prob:.4f}`")
+        st.write(f"**Threshold Used:** `{threshold}`")
+        st.write(f"**Prediction:** {'⚠️ FRAUD' if pred else '✔️ LEGIT'}")
 
     except Exception as e:
         st.error(f"Error: {e}")
+
