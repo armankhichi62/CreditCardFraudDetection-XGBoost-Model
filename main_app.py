@@ -12,29 +12,39 @@ st.markdown(
     """
     <style>
     .stApp {
-        background: linear-gradient(135deg, #0b1f3a, #123a6f, #1e5aa8);
-        color: white;
+        background-image: url("bank.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }
 
-    h1, h2, h3 {
-        color: #f8fafc;
+    /* Overlay for readability */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 20, 40, 0.75);
+        z-index: -1;
     }
 
-    label {
-        color: #e5e7eb !important;
-        font-weight: 600;
+    h1, h2, h3, p, label {
+        color: #f8fafc !important;
     }
 
     .card {
-        background-color: rgba(255,255,255,0.10);
+        background-color: rgba(255,255,255,0.12);
         padding: 20px;
         border-radius: 14px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        box-shadow: 0 4px 25px rgba(0,0,0,0.4);
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 
