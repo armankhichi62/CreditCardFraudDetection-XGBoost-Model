@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 if "threshold" not in st.session_state:
-    st.session_state.threshold = 0.20
+    st.session_state.threshold = 0.05
 
 # -------------------------------
 # LOAD MODEL + PREPROCESSORS
@@ -52,8 +52,8 @@ st.subheader("⚙️ Fraud Sensitivity")
 
 st.slider(
     "Fraud Threshold",
-    min_value=0.0,
-    max_value=1.0,
+    min_value=0.01,
+    max_value=0.30,
     step=0.01,
     key="threshold"
 )
