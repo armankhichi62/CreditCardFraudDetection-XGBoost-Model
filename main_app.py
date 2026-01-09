@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import pickle
-from xgboost import XGBClassifier
 
 st.set_page_config(
     page_title="Fraud Detection - XGBoost",
@@ -13,7 +12,7 @@ st.set_page_config(
 # -------------------------------
 @st.cache_resource
 def load_artifacts():
-     with open("xgb_model.pkl", "rb") as f:
+    with open("xgb_model.pkl", "rb") as f:
         xgb_model = pickle.load(f)
          
     with open("scaler.pkl", "rb") as f:
