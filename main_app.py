@@ -26,7 +26,7 @@ st.markdown(
         background-attachment: fixed;
     }}
 
-    /* Dark overlay for readability */
+    /* STRONG DARK OVERLAY */
     .stApp::before {{
         content: "";
         position: fixed;
@@ -34,24 +34,35 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(10, 20, 40, 0.75);
+        background: rgba(5, 15, 30, 0.88);  /* darker overlay */
         z-index: -1;
     }}
 
-    h1, h2, h3, p, label {{
+    /* Force readable text */
+    h1, h2, h3, h4, h5, h6,
+    p, span, label, div {{
         color: #f8fafc !important;
     }}
 
+    /* Input boxes */
+    input, textarea {{
+        background-color: rgba(255,255,255,0.15) !important;
+        color: white !important;
+        border-radius: 8px;
+    }}
+
+    /* Cards */
     .card {{
-        background-color: rgba(255,255,255,0.12);
+        background-color: rgba(255,255,255,0.14);
         padding: 20px;
         border-radius: 14px;
-        box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+        box-shadow: 0 4px 25px rgba(0,0,0,0.45);
     }}
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 
