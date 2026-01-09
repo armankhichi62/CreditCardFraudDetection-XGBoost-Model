@@ -15,37 +15,37 @@ Instead of forcing binary predictions, this project focuses on risk-based decisi
 
 Key Highlights:
 
-Uses XGBoost, which performs well on tabular and imbalanced datasets
+1.Uses XGBoost, which performs well on tabular and imbalanced datasets
 
-Outputs fraud probability
+2.Outputs fraud probability
 
-Converts probability into Low / Medium / High Risk
+3.Converts probability into Low / Medium / High Risk
 
-Interactive Streamlit web application
+4.Interactive Streamlit web application
 
-Professional banking-style UI
+5.Professional banking-style UI
 
-🧠 Machine Learning Approach
+🧠 Machine Learning Approach:
 
-Dataset: IEEE-CIS Fraud Detection Dataset
+1.Dataset: IEEE-CIS Fraud Detection Dataset
 
-Model: XGBoost Classifier
+2.Model: XGBoost Classifier
 
-Handling Imbalance:
+3.Handling Imbalance:
 
-No oversampling (to preserve real-world probabilities)
+   No oversampling (to preserve real-world probabilities)
 
-Risk interpretation via thresholding
+   Risk interpretation via thresholding
 
-Preprocessing:
+4.Preprocessing:
 
-StandardScaler for numeric features
+   StandardScaler for numeric features
 
-LabelEncoder for categorical features
+   LabelEncoder for categorical features
 
-Output: Probability-based fraud risk score
+5.Output: Probability-based fraud risk score
 
-🚦 Risk Classification Logic
+🚦 Risk Classification Logic:
 
 Fraud probabilities are naturally low due to class imbalance.
 Hence, predictions are interpreted as risk levels:
