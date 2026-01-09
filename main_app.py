@@ -11,27 +11,31 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* App background */
     .stApp {
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        background: linear-gradient(135deg, #0b1f3a, #123a6f, #1e5aa8);
         color: white;
     }
 
-    /* Headings */
     h1, h2, h3 {
-        color: #f1f5f9;
+        color: #f8fafc;
     }
 
-    /* Input labels */
     label {
         color: #e5e7eb !important;
         font-weight: 600;
     }
 
+    .card {
+        background-color: rgba(255,255,255,0.10);
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 if "threshold" not in st.session_state:
