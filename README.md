@@ -69,6 +69,8 @@ This approach is industry-correct and commonly used in banking systems.
 🎨 Banking-style UI with background image & overlay
 
 ⚡ Fast and interactive Streamlit interface
-< 0.015	🟢 Low Risk
-0.015 – 0.03	🟡 Medium Risk
-≥ 0.03	🔴 High Risk
+_____< 0.015	🟢 Low Risk
+
+_____0.015 – 0.03	🟡 Medium Risk
+
+_____≥ 0.03	🔴 High Risk
