@@ -8,18 +8,26 @@ st.set_page_config(
     layout="centered"
 )
 
+import base64
+
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img:
+        return base64.b64encode(img.read()).decode()
+
+bg_image = get_base64_image("bank_bg.jpg")
+
 st.markdown(
-    """
+    f"""
     <style>
-    .stApp {
-        background-image: url("bank.jpg");
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{bg_image}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
-    }
+    }}
 
-    /* Overlay for readability */
-    .stApp::before {
+    /* Dark overlay for readability */
+    .stApp::before {{
         content: "";
         position: fixed;
         top: 0;
@@ -28,23 +36,22 @@ st.markdown(
         height: 100%;
         background: rgba(10, 20, 40, 0.75);
         z-index: -1;
-    }
+    }}
 
-    h1, h2, h3, p, label {
+    h1, h2, h3, p, label {{
         color: #f8fafc !important;
-    }
+    }}
 
-    .card {
+    .card {{
         background-color: rgba(255,255,255,0.12);
         padding: 20px;
         border-radius: 14px;
         box-shadow: 0 4px 25px rgba(0,0,0,0.4);
-    }
+    }}
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 
 
