@@ -40,6 +40,10 @@ categorical_features = features["categorical"]
 # UI
 # -------------------------------
 st.title("💳 Credit Card Fraud Detection (XGBoost)")
+st.write(
+    "This system predicts **fraud risk probability** using an XGBoost model. "
+    "Because fraud is rare, predictions are interpreted as **risk levels**, not absolute fraud."
+)
 st.write("Enter transaction details to predict fraud")
 
 
@@ -102,16 +106,29 @@ if submitted:
         # XGBoost prediction (NO DMatrix)
         prob = float(xgb_model.predict_proba(final_input)[0][1])
   
-        threshold = st.session_state.threshold 
-        pred = 1 if prob > threshold else 0
+        # ----- Risk Logic (CORRECT FOR FRAUD) -----
+        high_th = st.session_state.threshold
+        medium_th = high_th / 2
 
+        if prob >= high_th:
+            risk = "🔴 HIGH RISK"
+            color = "red"
+        elif prob >= medium_th:
+            risk = "🟡 MEDIUM RISK"
+            color = "orange"
+        else:
+            risk = "🟢 LOW RISK"
+            color = "green"
 
-        # Output
+        # ----- Output -----
         st.success("Prediction Complete")
-        st.write(f"**Fraud Probability:** `{prob:.4f}`")
-        st.write(f"**Threshold Used:** `{threshold}`")
-        st.write(f"**Prediction:** {'⚠️ FRAUD' if pred else '✔️ LEGIT'}")
+        st.markdown(f"### Fraud Probability: `{prob:.4f}`")
+        st.markdown(f"### Risk Level: **:{color}[{risk}]**")
 
+        st.info(
+            "💡 **Note:** Fraud models output low probabilities because fraud is rare. "
+            "Risk levels provide a realistic interpretation used in banking systems."
+        )
         # FEATURE IMPORTANCE UI
         # ----------------------------------
         st.markdown("---")
